@@ -28,10 +28,10 @@ int codigo_existe(Lista *l, int codigo);
 Equipamento *encontrar_equipamento(Lista *l, int codigo);
 
 void liberar_lista(Lista *l);
-void inserir_solicitacao(Lista *l);
-void remover_solicitacao(Lista *l);
+int inserir_solicitacao(Lista *l);
+int remover_solicitacao(Lista *l);
 void consultar_solicitacao(Lista *l);
-void alterar_prioridade(Lista *l);
+int alterar_prioridade(Lista *l);
 void exibir_tudo(Lista *l);
 void exibir_ordem(Lista *l);
 
@@ -112,7 +112,7 @@ void liberar_lista(Lista *l) {
 	l->inicio = NULL;
 }
 
-void inserir_solicitacao(Lista *l) {
+int inserir_solicitacao(Lista *l) {
 	NoEquipamento *no = criar_no(ler_equipamento());
 
 	if (!codigo_existe(l, no->e.codigo_solicitacao)) {
@@ -120,6 +120,7 @@ void inserir_solicitacao(Lista *l) {
 			no->e.codigo_solicitacao < l->inicio->e.codigo_solicitacao) {
 			no->prox = l->inicio;
 			l->inicio = no;
+			return 1;
 		} else {
 			NoEquipamento *aux = l->inicio;
 
@@ -133,14 +134,16 @@ void inserir_solicitacao(Lista *l) {
 				no->prox = aux->prox;
 				aux->prox = no;
 			}
+
+			return 1;
 		}
 	} else {
-		printf("Código de solicitação já existe.\n");
 		free(no);
+		return 0;
 	}
 }
 
-void remover_solicitacao(Lista *l) {
+int remover_solicitacao(Lista *l) {
 	int codigo;
 
 	printf("Código de solicitação do equipamento a remover: ");
@@ -155,7 +158,7 @@ void remover_solicitacao(Lista *l) {
 	}
 
 	if (aux == NULL) {
-		printf("Solicitação não encontrada.\n");
+		return 0;
 	} else {
 		if (anterior == NULL) {
 			l->inicio = aux->prox;
@@ -164,19 +167,24 @@ void remover_solicitacao(Lista *l) {
 		}
 
 		free(aux);
+		return 1;
 	}
 }
 
 void imprimir_equipamento(Equipamento e) {
-	printf("Código da solicitação: %d\n", e.codigo_solicitacao);
+    printf("\n ================================== \n \n");
 
-	printf("Código do equipamento: %s\n", e.codigo_equipamento);
+	printf("      Código da solicitação: %d\n", e.codigo_solicitacao);
 
-	printf("Nome do equipamento: %s\n", e.nome_equipamento);
+	printf("      Código do equipamento: %s\n", e.codigo_equipamento);
 
-	printf("Prioridade: %d\n", e.prioridade);
+	printf("      Nome do equipamento: %s\n", e.nome_equipamento);
 
-	printf("Período: %d\n", e.periodo);
+	printf("      Prioridade: %d\n", e.prioridade);
+
+	printf("      Período: %d\n", e.periodo);
+
+	printf("\n ==================================");
 }
 
 Equipamento *encontrar_equipamento(Lista *l, int codigo) {
@@ -194,13 +202,14 @@ Equipamento *encontrar_equipamento(Lista *l, int codigo) {
 	return resultado;
 }
 
-void alterar_prioridade(Lista *l) {
+int alterar_prioridade(Lista *l) {
 	int codigo;
 	printf("\nCódigo de solicitação: ");
 	scanf("%d", &codigo);
 
 	if (!codigo_existe(l, codigo)) {
 		printf("Solicitação não encontrada.\n");
+		return 0;
 	} else {
 		Equipamento *e = encontrar_equipamento(l, codigo);
 
@@ -228,6 +237,7 @@ void alterar_prioridade(Lista *l) {
 			}
 		} while (e->periodo < 1 || e->periodo > limite_maximo);
 		printf("\nPrioridade e período alterados com sucesso!\n");
+		return 1;
 	}
 }
 
@@ -243,7 +253,7 @@ void consultar_solicitacao(Lista *l) {
 	}
 
 	if (aux == NULL) {
-		printf("Solicitação não encontrada.\n");
+	    printf("\n \t \t============= SOLICITAÇÃO NÃO ENCONTRADA =============");
 	} else {
 		imprimir_equipamento(aux->e);
 	}
